@@ -2,10 +2,9 @@
 
 The flocking algorithm mimics behaviors commonly seen in nature. A typical example of this behavior is the flight of birds in a flock. 
 
-## 1 - Goal
+## 1 - Goals
 - In this coding challenge, I will create a flocking simulation in Flutter based on Craig Reynolds "boids" algorithm. Inspired by [The Coding Train Challenge - Flocking Simulation by Daniel Shiffman](https://thecodingtrain.com/challenges/124-flocking-simulation)
 
-### 1.1 
 - Understand and practice how the flutter engine draws the UI behind the scenes.
 
 ## 2 - References

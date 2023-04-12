@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flocking_simulation/boid.dart';
 import 'package:flocking_simulation/flock_painter.dart';
+import 'package:flocking_simulation/utils.dart';
 import 'package:flutter/material.dart';
 
 class AppWidget extends StatefulWidget {
@@ -11,15 +12,16 @@ class AppWidget extends StatefulWidget {
 }
 
 class _AppWidgetState extends State<AppWidget> {
-  final flock = List<Boid>.generate(1000, (index) => Boid());
+  final flock = List<Boid>.generate(100, (index) => Boid());
   late Timer timer;
   @override
   void initState() {
     super.initState();
-    const duration = Duration(milliseconds: 100 ~/ 60);
+    const duration = Duration(milliseconds: 33);
     timer = Timer.periodic(duration, (timer) {
       setState(() {
         for (var boid in flock) {
+          boid.flock(flock);
           boid.updatePosition();
         }
       });
@@ -41,8 +43,8 @@ class _AppWidgetState extends State<AppWidget> {
           Center(
             child: FittedBox(
               child: Container(
-                height: 1000,
-                width: 1000,
+                width: Utils.width,
+                height: Utils.height,
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: Colors.white10,
@@ -54,8 +56,8 @@ class _AppWidgetState extends State<AppWidget> {
           Center(
             child: FittedBox(
               child: SizedBox(
-                height: 1000,
-                width: 1000,
+                width: Utils.width,
+                height: Utils.height,
                 child: FlockPaint(
                   painter: FlockPainter(flock),
                 ),

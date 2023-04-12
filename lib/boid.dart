@@ -3,35 +3,70 @@ import 'package:vector_math/vector_math.dart';
 
 class Boid {
   Boid() {
-    position = Vector2(500, 500);
-    velocity = Vector2(Utils.range(-0.1, 0.1), Utils.range(-0.1, 0.1));
+    final x = Utils.range(0, Utils.width);
+    final y = Utils.range(0, Utils.height);
+    position = Vector2(x, y);
+    final dx = Utils.range(-4, 4);
+    final dy = Utils.range(-4, 4);
+    velocity = Vector2(dx, dy);
+    velocity = setMag(velocity, Utils.range(2, 4));
     acceleration = Vector2.zero();
-
+    maxForce = 0.2;
+    maxSpeed = 4;
     color = [Utils.color(), Utils.color(), Utils.color()];
   }
 
   late Vector2 position;
   late Vector2 velocity;
   late Vector2 acceleration;
-
+  late double maxForce;
+  late double maxSpeed;
   late List<int> color;
 
-  updatePosition() {
-    if (position.storage[0] > 1000 || position.storage[0] < 0) {
-      updatedx();
+  Vector2 align(List<Boid> boids) {
+    const perceptionRadius = 50.0;
+    Vector2 steering = Vector2.zero();
+    int total = 0;
+    for (var other in boids) {
+      final d = position.distanceTo(other.position);
+      if (other != this && d < perceptionRadius) {
+        steering.add(other.velocity);
+        total++;
+      }
     }
-    if (position.storage[1] > 1000 || position.storage[1] < 0) {
-      updatedy();
+    if (total > 0) {
+      steering /= ((total).toDouble());
+      steering = setMag(steering, maxSpeed);
+      steering.sub(velocity);
+      steering.clampScalar(-maxForce, maxForce);
+    }
+    return steering;
+  }
+
+  flock(List<Boid> boids) {
+    Vector2 alignment = align(boids);
+    acceleration = alignment;
+  }
+
+  updatePosition() {
+    if (position.x > Utils.width) {
+      position.x = 0;
+    } else if (position.x < 0) {
+      position.x = Utils.width;
+    }
+    if (position.y > Utils.height) {
+      position.y = 0;
+    } else if (position.y < 0) {
+      position.y = Utils.height;
     }
     position.add(velocity);
     velocity.add(acceleration);
   }
 
-  updatedx() {
-    velocity.r = velocity.r * -1;
-  }
-
-  updatedy() {
-    velocity.g = velocity.g * -1;
+  Vector2 setMag(Vector2 newVector, double newSpeed) {
+    double mag = newSpeed / newVector.length;
+    newVector.x *= mag;
+    newVector.y *= mag;
+    return newVector;
   }
 }
