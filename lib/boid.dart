@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flocking_simulation/utils.dart';
 import 'package:vector_math/vector_math.dart';
 
@@ -38,14 +40,37 @@ class Boid {
       steering /= ((total).toDouble());
       steering = setMag(steering, maxSpeed);
       steering.sub(velocity);
-      steering.clampScalar(-maxForce, maxForce);
+      steering = limit(steering, maxForce);
+    }
+    return steering;
+  }
+
+  Vector2 cohesion(List<Boid> boids) {
+    const perceptionRadius = 100.0;
+    Vector2 steering = Vector2.zero();
+    int total = 0;
+    for (var other in boids) {
+      final d = position.distanceTo(other.position);
+      if (other != this && d < perceptionRadius) {
+        steering.add(other.position);
+        total++;
+      }
+    }
+    if (total > 0) {
+      steering /= ((total).toDouble());
+      steering.sub(position);
+      steering = setMag(steering, maxSpeed);
+      steering.sub(velocity);
+      steering = limit(steering, maxForce);
     }
     return steering;
   }
 
   flock(List<Boid> boids) {
     Vector2 alignment = align(boids);
-    acceleration = alignment;
+    Vector2 cohesion = this.cohesion(boids);
+    acceleration.add(alignment);
+    acceleration.add(cohesion);
   }
 
   updatePosition() {
@@ -61,12 +86,23 @@ class Boid {
     }
     position.add(velocity);
     velocity.add(acceleration);
+    velocity = limit(velocity, maxSpeed);
+    acceleration.setZero();
   }
 
-  Vector2 setMag(Vector2 newVector, double newSpeed) {
-    double mag = newSpeed / newVector.length;
+  Vector2 setMag(Vector2 newVector, double len) {
+    double mag = len / newVector.length;
     newVector.x *= mag;
     newVector.y *= mag;
+    return newVector;
+  }
+
+  Vector2 limit(Vector2 newVector, double max) {
+    final mSq = newVector.length2;
+    if (mSq > (max * max)) {
+      newVector /= sqrt(mSq);
+      newVector *= max;
+    }
     return newVector;
   }
 }
