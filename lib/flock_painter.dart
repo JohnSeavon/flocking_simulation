@@ -13,7 +13,7 @@ class FlockPainter extends CustomPainter {
   FlockPainter(this.flock);
   @override
   void paint(Canvas canvas, Size size) {
-    const radius = 3.0;
+    const radius = 2.0;
     final List<double> position = [size.width / 2, size.height / 2];
     final paintCenter = Paint()..color = Colors.white30;
     canvas.drawCircle(Offset(position[0], position[1]), 1, paintCenter);
@@ -22,14 +22,16 @@ class FlockPainter extends CustomPainter {
       final randompaint = Paint()
         ..color =
             Color.fromRGBO(boid.color[0], boid.color[1], boid.color[2], 1);
-      canvas.drawCircle(
-        Offset(
-          boid.position.x,
-          boid.position.y,
-        ),
-        radius,
-        randompaint,
-      );
+      if (!boid.position.isNaN) {
+        canvas.drawCircle(
+          Offset(
+            boid.position.x,
+            boid.position.y,
+          ),
+          radius,
+          randompaint,
+        );
+      }
     }
   }
 

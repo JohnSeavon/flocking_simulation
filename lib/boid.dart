@@ -54,7 +54,11 @@ class Boid {
       if (other != this && d < perceptionRadius) {
         Vector2 diff = Vector2(position.x, position.y);
         diff.sub(other.position);
-        diff /= d;
+        if (d != 0) {
+          diff /= d;
+        } else {
+          diff /= 0.1;
+        }
         steering.add(diff);
         total++;
       }
@@ -89,10 +93,20 @@ class Boid {
     return steering;
   }
 
-  flock(List<Boid> boids) {
+  flock(
+    List<Boid> boids,
+    double alignValue,
+    double cohesionValue,
+    double separationValue,
+  ) {
     Vector2 alignment = align(boids);
     Vector2 cohesion = this.cohesion(boids);
     Vector2 separation = this.separation(boids);
+
+    alignment.scale(alignValue);
+    cohesion.scale(cohesionValue);
+    separation.scale(separationValue);
+
     acceleration.add(separation);
     acceleration.add(alignment);
     acceleration.add(cohesion);
