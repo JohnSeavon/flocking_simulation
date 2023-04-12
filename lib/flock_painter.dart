@@ -16,7 +16,6 @@ class FlockPainter extends CustomPainter {
     const radius = 1.0;
     final List<double> position = [size.width / 2, size.height / 2];
     final paintCenter = Paint()..color = Colors.white30;
-    final paint = Paint()..color = Colors.white;
     canvas.drawCircle(Offset(position[0], position[1]), radius, paintCenter);
 
     for (var boid in flock) {
@@ -25,8 +24,8 @@ class FlockPainter extends CustomPainter {
             Color.fromRGBO(boid.color[0], boid.color[1], boid.color[2], 1);
       canvas.drawCircle(
         Offset(
-          boid.position.storage[0],
-          boid.position.storage[1],
+          boid.position.r,
+          boid.position.g,
         ),
         1,
         randompaint,

@@ -28,40 +28,42 @@ class _AppWidgetState extends State<AppWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Text(
-          'Number of particles: ${flock.length}',
-          style: Theme.of(context)
-              .textTheme
-              .bodySmall!
-              .copyWith(color: Colors.white),
-        ),
-        Center(
-          child: FittedBox(
-            child: Container(
-              height: 1000,
-              width: 1000,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.white10,
+    return SafeArea(
+      child: Stack(
+        children: [
+          Text(
+            'Number of particles: ${flock.length}',
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall!
+                .copyWith(color: Colors.white),
+          ),
+          Center(
+            child: FittedBox(
+              child: Container(
+                height: 1000,
+                width: 1000,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.white10,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        Center(
-          child: FittedBox(
-            child: SizedBox(
-              height: 1000,
-              width: 1000,
-              child: FlockPaint(
-                painter: FlockPainter(flock),
+          Center(
+            child: FittedBox(
+              child: SizedBox(
+                height: 1000,
+                width: 1000,
+                child: FlockPaint(
+                  painter: FlockPainter(flock),
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
