@@ -13,7 +13,7 @@ class Boid {
     velocity = Vector2(dx, dy);
     velocity = setMag(velocity, Utils.range(2, 4));
     acceleration = Vector2.zero();
-    maxForce = 0.2;
+    maxForce = 1;
     maxSpeed = 4;
     color = [Utils.color(), Utils.color(), Utils.color()];
   }
@@ -45,8 +45,31 @@ class Boid {
     return steering;
   }
 
+  Vector2 separation(List<Boid> boids) {
+    const perceptionRadius = 50.0;
+    Vector2 steering = Vector2.zero();
+    int total = 0;
+    for (var other in boids) {
+      final d = position.distanceTo(other.position);
+      if (other != this && d < perceptionRadius) {
+        Vector2 diff = Vector2(position.x, position.y);
+        diff.sub(other.position);
+        diff /= d;
+        steering.add(diff);
+        total++;
+      }
+    }
+    if (total > 0) {
+      steering /= ((total).toDouble());
+      steering = setMag(steering, maxSpeed);
+      steering.sub(velocity);
+      steering = limit(steering, maxForce);
+    }
+    return steering;
+  }
+
   Vector2 cohesion(List<Boid> boids) {
-    const perceptionRadius = 100.0;
+    const perceptionRadius = 50.0;
     Vector2 steering = Vector2.zero();
     int total = 0;
     for (var other in boids) {
@@ -69,6 +92,8 @@ class Boid {
   flock(List<Boid> boids) {
     Vector2 alignment = align(boids);
     Vector2 cohesion = this.cohesion(boids);
+    Vector2 separation = this.separation(boids);
+    acceleration.add(separation);
     acceleration.add(alignment);
     acceleration.add(cohesion);
   }
