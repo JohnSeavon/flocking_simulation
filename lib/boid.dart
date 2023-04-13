@@ -5,32 +5,29 @@ import 'package:vector_math/vector_math.dart';
 
 class Boid {
   Boid() {
-    final x = Utils.range(0, Utils.width);
-    final y = Utils.range(0, Utils.height);
+    final x = Utils.range(0 + 80, Utils.width - 80);
+    final y = Utils.range(0 + 80, Utils.height - 80);
     position = Vector2(x, y);
-    final dx = Utils.range(-5, 5);
-    final dy = Utils.range(-5, 5);
+    final dx = Utils.range(-maxSpeed, maxSpeed);
+    final dy = Utils.range(-maxSpeed, maxSpeed);
     velocity = Vector2(dx, dy);
-    velocity = setMag(velocity, Utils.range(3, 5));
+    velocity = setMag(velocity, maxSpeed);
     acceleration = Vector2.zero();
-    //maxForce = 1;
-    maxSpeed = 5;
     color = [Utils.color(), Utils.color()];
   }
 
   late Vector2 position;
   late Vector2 velocity;
   late Vector2 acceleration;
-  //late double maxForce;
-  late double maxSpeed;
+  final maxSpeed = Utils.range(7, 10);
   late List<int> color;
 
-  final cohesionRadius = 40.0;
-  final maxCohesionForce = 0.8;
-  final alignRadius = 40.0;
-  final maxAlignForce = 1.1;
+  final cohesionRadius = 30.0;
+  final maxCohesionForce = Utils.range(0.18, 0.22);
+  final alignRadius = 30.0;
+  final maxAlignForce = Utils.range(0.54, 0.66);
   final separationRadius = 20.0;
-  final maxSeparationForce = 0.7;
+  final maxSeparationForce = Utils.range(0.54, 0.66);
 
   Vector2 cohesion(List<Boid> boids) {
     Vector2 steering = Vector2.zero();
@@ -116,7 +113,7 @@ class Boid {
     acceleration.add(separation);
   }
 
-  updatePosition() {
+  borderless() {
     if (position.x > Utils.width) {
       position.x = 0;
     } else if (position.x < 0) {
@@ -127,6 +124,25 @@ class Boid {
     } else if (position.y < 0) {
       position.y = Utils.height;
     }
+  }
+
+  avoidBorders() {
+    const border = 30.0;
+    var force = (Utils.range(0, 1.5));
+    if (position.x > Utils.width - border) {
+      velocity.x -= force;
+    } else if (position.x < 0 + border) {
+      velocity.x += force;
+    }
+    if (position.y > Utils.height - border) {
+      velocity.y -= force;
+    } else if (position.y < 0 + border) {
+      velocity.y += force;
+    }
+  }
+
+  updatePosition(bool avoidBorder) {
+    (avoidBorder) ? avoidBorders() : borderless();
     position.add(velocity);
     velocity.add(acceleration);
     velocity = limit(velocity, maxSpeed);

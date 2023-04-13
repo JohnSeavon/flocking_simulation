@@ -13,28 +13,34 @@ class FlockPainterView extends StatefulWidget {
 }
 
 class _FlockPainterViewState extends State<FlockPainterView> {
-  double _cohesionSlider = 0.2;
-  double _alignSlider = 0.6;
-  double _separationSlider = 0.6;
+  double _cohesionSlider = 1;
+  double _alignSlider = 1;
+  double _separationSlider = 1;
   bool _isPaused = false;
+  bool _avoidBorder = true;
 
-  final flock = List<Boid>.generate(500, (index) => Boid());
+  final flock = List<Boid>.generate(20, (index) => Boid());
   late Timer timer;
 
   @override
   void initState() {
     super.initState();
-    const duration = Duration(milliseconds: 33);
-    timer = Timer.periodic(duration, (timer) {
-      if (!_isPaused) {
-        setState(() {
-          for (var boid in flock) {
-            boid.flock(flock, _cohesionSlider, _alignSlider, _separationSlider);
-            boid.updatePosition();
-          }
-        });
-      }
-    });
+    if (flock.isEmpty) {
+      timer.cancel();
+    } else {
+      const duration = Duration(milliseconds: 33);
+      timer = Timer.periodic(duration, (timer) {
+        if (!_isPaused) {
+          setState(() {
+            for (var boid in flock) {
+              boid.flock(
+                  flock, _cohesionSlider, _alignSlider, _separationSlider);
+              boid.updatePosition(_avoidBorder);
+            }
+          });
+        }
+      });
+    }
   }
 
   @override
@@ -49,41 +55,76 @@ class _FlockPainterViewState extends State<FlockPainterView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Padding(
+                  Container(
+                    width: 180,
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Number of particles: ${flock.length}',
+                      'Number of boids: ${flock.length}',
                       style: Theme.of(context)
                           .textTheme
                           .bodySmall!
                           .copyWith(color: Colors.white),
                     ),
                   ),
-                  SizedBox(
-                    width: 45,
-                    height: 45,
-                    child: TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _isPaused = !_isPaused;
-                        });
-                      },
-                      child: Icon(
-                        (_isPaused) ? Icons.play_arrow : Icons.pause,
-                        color: Colors.white,
-                      ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isPaused = !_isPaused;
+                      });
+                    },
+                    icon: Icon(
+                      (_isPaused) ? Icons.play_arrow : Icons.pause,
+                      color: Colors.white,
                     ),
                   ),
-                  SizedBox(
-                    width: 45,
-                    height: 45,
-                    child: TextButton(
-                      onPressed: widget.refresh,
-                      child: const Icon(
-                        Icons.refresh,
-                        color: Colors.white,
-                      ),
+                  IconButton(
+                    onPressed: widget.refresh,
+                    icon: const Icon(
+                      Icons.refresh,
+                      color: Colors.white,
                     ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        for (var i = 0; i < 10; i++) {
+                          flock.add(Boid());
+                        }
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: (flock.isEmpty)
+                        ? null
+                        : () {
+                            setState(() {
+                              for (var i = 0; i < 10; i++) {
+                                flock.removeAt(0);
+                              }
+                            });
+                          },
+                    icon: const Icon(
+                      Icons.remove,
+                      color: Colors.white,
+                    ),
+                  ),
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(140, 40),
+                        side: const BorderSide(
+                          color: Colors.white,
+                          width: 0.5,
+                        )),
+                    onPressed: () {
+                      setState(() {
+                        _avoidBorder = !_avoidBorder;
+                      });
+                    },
+                    child: Text((_avoidBorder) ? 'Bordeless' : 'Avoid Borders'),
                   ),
                 ],
               ),

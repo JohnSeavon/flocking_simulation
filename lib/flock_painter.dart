@@ -19,19 +19,6 @@ class FlockPainter extends CustomPainter {
   static const radius = 2.0;
   @override
   void paint(Canvas canvas, Size size) {
-    final paintCenter = Paint()..color = Colors.white30;
-    //final paint = Paint()..color = Colors.white;
-
-    // final paintCircle = Paint()
-    //   ..color = Colors.white10
-    //   ..style = PaintingStyle.stroke;
-
-    // final paintCircleRed = Paint()
-    //   ..color = Colors.red.withOpacity(0.2)
-    //   ..style = PaintingStyle.stroke;
-
-    canvas.drawCircle(Offset(size.width / 2, size.height / 2), 1, paintCenter);
-
     for (var boid in flock) {
       final randompaint = Paint()
         ..color = Color.fromRGBO(boid.color[0], boid.color[1], 255, 1);
@@ -53,16 +40,6 @@ class FlockPainter extends CustomPainter {
 
         canvas.drawPath(path, randompaint);
         canvas.restore();
-
-        //   // perception radius
-        //   canvas.drawCircle(
-        //       Offset(boid.position.x, boid.position.y), 40, paintCircle);
-        //   // separation radius
-        //   canvas.drawCircle(
-        //       Offset(boid.position.x, boid.position.y), 15, paintCircleRed);
-        // } else {
-        //   debugPrint('NaN');
-        // }
       }
     }
   }
