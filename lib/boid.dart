@@ -13,7 +13,7 @@ class Boid {
     velocity = Vector2(dx, dy);
     velocity = setMag(velocity, Utils.range(2, 4));
     acceleration = Vector2.zero();
-    maxForce = 1;
+    //maxForce = 1;
     maxSpeed = 4;
     color = [Utils.color(), Utils.color(), Utils.color()];
   }
@@ -21,17 +21,23 @@ class Boid {
   late Vector2 position;
   late Vector2 velocity;
   late Vector2 acceleration;
-  late double maxForce;
+  //late double maxForce;
   late double maxSpeed;
   late List<int> color;
 
+  final alignRadius = 30.0;
+  final maxAlignForce = 1.0;
+  final separationRadius = 15.0;
+  final maxSeparationForce = 1.0;
+  final cohesionRadius = 30.0;
+  final maxCohesionForce = 1.0;
+
   Vector2 align(List<Boid> boids) {
-    const perceptionRadius = 50.0;
     Vector2 steering = Vector2.zero();
     int total = 0;
     for (var other in boids) {
       final d = position.distanceTo(other.position);
-      if (other != this && d < perceptionRadius) {
+      if (other != this && d < alignRadius) {
         steering.add(other.velocity);
         total++;
       }
@@ -40,24 +46,23 @@ class Boid {
       steering /= ((total).toDouble());
       steering = setMag(steering, maxSpeed);
       steering.sub(velocity);
-      steering = limit(steering, maxForce);
+      steering = limit(steering, maxAlignForce);
     }
     return steering;
   }
 
   Vector2 separation(List<Boid> boids) {
-    const perceptionRadius = 50.0;
     Vector2 steering = Vector2.zero();
     int total = 0;
     for (var other in boids) {
       final d = position.distanceTo(other.position);
-      if (other != this && d < perceptionRadius) {
+      if (other != this && d < separationRadius) {
         Vector2 diff = Vector2(position.x, position.y);
         diff.sub(other.position);
         if (d != 0) {
-          diff /= d;
+          diff /= (d * d);
         } else {
-          diff /= 0.1;
+          diff /= 0.0001;
         }
         steering.add(diff);
         total++;
@@ -67,18 +72,17 @@ class Boid {
       steering /= ((total).toDouble());
       steering = setMag(steering, maxSpeed);
       steering.sub(velocity);
-      steering = limit(steering, maxForce);
+      steering = limit(steering, maxSeparationForce);
     }
     return steering;
   }
 
   Vector2 cohesion(List<Boid> boids) {
-    const perceptionRadius = 50.0;
     Vector2 steering = Vector2.zero();
     int total = 0;
     for (var other in boids) {
       final d = position.distanceTo(other.position);
-      if (other != this && d < perceptionRadius) {
+      if (other != this && d < cohesionRadius) {
         steering.add(other.position);
         total++;
       }
@@ -88,7 +92,7 @@ class Boid {
       steering.sub(position);
       steering = setMag(steering, maxSpeed);
       steering.sub(velocity);
-      steering = limit(steering, maxForce);
+      steering = limit(steering, maxCohesionForce);
     }
     return steering;
   }
@@ -107,9 +111,9 @@ class Boid {
     cohesion.scale(cohesionValue);
     separation.scale(separationValue);
 
-    acceleration.add(separation);
-    acceleration.add(alignment);
     acceleration.add(cohesion);
+    acceleration.add(alignment);
+    acceleration.add(separation);
   }
 
   updatePosition() {

@@ -8,6 +8,6 @@ class Utils {
 
   static int color() => rng.nextDouble() * 256 ~/ 1;
 
-  static const width = 640.0;
-  static const height = 640.0;
+  static const width = 1000.0;
+  static const height = 1000.0;
 }

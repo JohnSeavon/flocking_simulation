@@ -12,9 +12,9 @@ class AppWidget extends StatefulWidget {
 }
 
 class _AppWidgetState extends State<AppWidget> {
-  double _alignSlider = 1;
-  double _cohesionSlider = 1;
-  double _separationSlider = 1;
+  double _alignSlider = 1.0;
+  double _cohesionSlider = 0.2;
+  double _separationSlider = 0.6;
   bool _isPaused = false;
 
   final flock = List<Boid>.generate(200, (index) => Boid());
