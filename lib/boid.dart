@@ -8,14 +8,14 @@ class Boid {
     final x = Utils.range(0, Utils.width);
     final y = Utils.range(0, Utils.height);
     position = Vector2(x, y);
-    final dx = Utils.range(-4, 4);
-    final dy = Utils.range(-4, 4);
+    final dx = Utils.range(-5, 5);
+    final dy = Utils.range(-5, 5);
     velocity = Vector2(dx, dy);
-    velocity = setMag(velocity, Utils.range(2, 4));
+    velocity = setMag(velocity, Utils.range(3, 5));
     acceleration = Vector2.zero();
     //maxForce = 1;
-    maxSpeed = 4;
-    color = [Utils.color(), Utils.color(), Utils.color()];
+    maxSpeed = 5;
+    color = [Utils.color(), Utils.color()];
   }
 
   late Vector2 position;
@@ -25,12 +25,32 @@ class Boid {
   late double maxSpeed;
   late List<int> color;
 
-  final alignRadius = 30.0;
-  final maxAlignForce = 1.0;
-  final separationRadius = 15.0;
-  final maxSeparationForce = 1.0;
-  final cohesionRadius = 30.0;
-  final maxCohesionForce = 1.0;
+  final cohesionRadius = 40.0;
+  final maxCohesionForce = 0.8;
+  final alignRadius = 40.0;
+  final maxAlignForce = 1.1;
+  final separationRadius = 20.0;
+  final maxSeparationForce = 0.7;
+
+  Vector2 cohesion(List<Boid> boids) {
+    Vector2 steering = Vector2.zero();
+    int total = 0;
+    for (var other in boids) {
+      final d = position.distanceTo(other.position);
+      if (other != this && d < cohesionRadius) {
+        steering.add(other.position);
+        total++;
+      }
+    }
+    if (total > 0) {
+      steering /= ((total).toDouble());
+      steering.sub(position);
+      steering = setMag(steering, maxSpeed);
+      steering.sub(velocity);
+      steering = limit(steering, maxCohesionForce);
+    }
+    return steering;
+  }
 
   Vector2 align(List<Boid> boids) {
     Vector2 steering = Vector2.zero();
@@ -77,38 +97,18 @@ class Boid {
     return steering;
   }
 
-  Vector2 cohesion(List<Boid> boids) {
-    Vector2 steering = Vector2.zero();
-    int total = 0;
-    for (var other in boids) {
-      final d = position.distanceTo(other.position);
-      if (other != this && d < cohesionRadius) {
-        steering.add(other.position);
-        total++;
-      }
-    }
-    if (total > 0) {
-      steering /= ((total).toDouble());
-      steering.sub(position);
-      steering = setMag(steering, maxSpeed);
-      steering.sub(velocity);
-      steering = limit(steering, maxCohesionForce);
-    }
-    return steering;
-  }
-
   flock(
     List<Boid> boids,
-    double alignValue,
     double cohesionValue,
+    double alignValue,
     double separationValue,
   ) {
-    Vector2 alignment = align(boids);
     Vector2 cohesion = this.cohesion(boids);
+    Vector2 alignment = align(boids);
     Vector2 separation = this.separation(boids);
 
-    alignment.scale(alignValue);
     cohesion.scale(cohesionValue);
+    alignment.scale(alignValue);
     separation.scale(separationValue);
 
     acceleration.add(cohesion);
