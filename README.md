@@ -18,3 +18,15 @@ The flocking algorithm mimics behaviors commonly seen in nature. A typical examp
 
 ### 3.1 Packages
  - vector_math
+
+## 4 - Results
+
+![Cohesion image](.images/flocking_simulation_cohesion.gif)
+
+![Alignment image](.images/flocking_simulation_alignment.gif)
+
+![Separation image](.images/flocking_simulation_separation.gif)
+
+![Borders image](.images/flocking_simulation_borders.gif)
+
+![Add image](.images/flocking_simulation_add.gif)
