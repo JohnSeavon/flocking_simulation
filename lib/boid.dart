@@ -1,12 +1,16 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flocking_simulation/utils.dart';
 import 'package:vector_math/vector_math.dart';
 
+var screenWidth = (window.physicalSize.shortestSide / window.devicePixelRatio);
+var screenHeight = (window.physicalSize.longestSide / window.devicePixelRatio);
+
 class Boid {
   Boid() {
-    final x = Utils.range(0 + 80, Utils.width - 80);
-    final y = Utils.range(0 + 80, Utils.height - 80);
+    final x = Utils.range(0 + 80, screenWidth - 80);
+    final y = Utils.range(0 + 80, screenHeight - 80);
     position = Vector2(x, y);
     final dx = Utils.range(-maxSpeed, maxSpeed);
     final dy = Utils.range(-maxSpeed, maxSpeed);
@@ -19,11 +23,11 @@ class Boid {
   late Vector2 position;
   late Vector2 velocity;
   late Vector2 acceleration;
-  final maxSpeed = Utils.range(7, 10);
+  final maxSpeed = Utils.range(6, 8);
   late List<int> color;
 
   final cohesionRadius = 30.0;
-  final maxCohesionForce = Utils.range(0.18, 0.22);
+  final maxCohesionForce = Utils.range(0.225, 0.275);
   final alignRadius = 30.0;
   final maxAlignForce = Utils.range(0.54, 0.66);
   final separationRadius = 20.0;
@@ -114,30 +118,45 @@ class Boid {
   }
 
   borderless() {
-    if (position.x > Utils.width) {
+    if (position.x > screenWidth) {
       position.x = 0;
     } else if (position.x < 0) {
-      position.x = Utils.width;
+      position.x = screenWidth;
     }
-    if (position.y > Utils.height) {
+    if (position.y > screenHeight) {
       position.y = 0;
     } else if (position.y < 0) {
-      position.y = Utils.height;
+      position.y = screenHeight;
     }
   }
 
   avoidBorders() {
-    const border = 30.0;
+    const border = 50.0;
     var force = (Utils.range(0, 1.5));
-    if (position.x > Utils.width - border) {
+    if (position.x > screenWidth - border) {
       velocity.x -= force;
     } else if (position.x < 0 + border) {
       velocity.x += force;
     }
-    if (position.y > Utils.height - border) {
+    if (position.y > screenHeight - border) {
       velocity.y -= force;
     } else if (position.y < 0 + border) {
       velocity.y += force;
+    }
+
+    if (position.x > screenWidth) {
+      position.x = 0;
+      position.y = screenHeight - position.y;
+    } else if (position.x < 0) {
+      position.x = screenWidth;
+      position.y = screenHeight - position.y;
+    }
+    if (position.y > screenHeight) {
+      position.y = 0;
+      position.x = screenWidth - position.x;
+    } else if (position.y < 0) {
+      position.y = screenHeight;
+      position.x = screenWidth - position.x;
     }
   }
 
