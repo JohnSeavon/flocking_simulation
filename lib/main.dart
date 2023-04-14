@@ -19,11 +19,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSwatch(),
-          sliderTheme: SliderThemeData(
-            inactiveTrackColor: Colors.grey[800],
-          )),
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSwatch(),
+        sliderTheme: SliderThemeData(
+          inactiveTrackColor: Colors.grey[800],
+        ),
+        iconButtonTheme: IconButtonThemeData(
+          style: IconButton.styleFrom(
+            foregroundColor: Colors.white,
+            highlightColor: Colors.blue[900],
+          ),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: Colors.blue.withOpacity(0.2),
+          foregroundColor: Colors.white54,
+          hoverColor: Colors.blue.withOpacity(0.6),
+        ),
+      ),
       home: const AppWidget(),
     );
   }

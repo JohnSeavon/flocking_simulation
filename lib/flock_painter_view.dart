@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 
 class FlockPainterView extends StatefulWidget {
   final void Function() refresh;
-  const FlockPainterView(this.refresh, {super.key});
+  final bool showMenu;
+  const FlockPainterView(this.refresh, this.showMenu, {super.key});
 
   @override
   State<FlockPainterView> createState() => _FlockPainterViewState();
@@ -47,191 +48,199 @@ class _FlockPainterViewState extends State<FlockPainterView> {
     final size = MediaQuery.of(context).size;
     return Stack(
       children: [
-        Opacity(
-          opacity: 0.5,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                FittedBox(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        width: 150,
-                        child: Text(
-                          'Number of boids: ${flock.length}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall!
-                              .copyWith(color: Colors.white),
+        if (widget.showMenu)
+          Opacity(
+            opacity: 0.8,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  FittedBox(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          alignment: Alignment.center,
+                          width: 150,
+                          child: Text(
+                            'Number of boids: ${flock.length}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall!
+                                .copyWith(color: Colors.white),
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _isPaused = !_isPaused;
-                          });
-                        },
-                        icon: Icon(
-                          (_isPaused) ? Icons.play_arrow : Icons.pause,
-                          color: Colors.white,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: widget.refresh,
-                        icon: const Icon(
-                          Icons.refresh,
-                          color: Colors.white,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            for (var i = 0; i < 10; i++) {
-                              flock.add(Boid());
-                            }
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: (flock.isEmpty)
-                            ? null
-                            : () {
-                                setState(() {
-                                  for (var i = 0; i < 10; i++) {
-                                    flock.removeAt(0);
-                                  }
-                                });
-                              },
-                        icon: const Icon(
-                          Icons.remove,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                              minimumSize: const Size(140, 40),
-                              side: const BorderSide(
-                                color: Colors.white,
-                                width: 0.5,
-                              )),
+                        IconButton(
                           onPressed: () {
                             setState(() {
-                              _avoidBorder = !_avoidBorder;
+                              _isPaused = !_isPaused;
                             });
                           },
-                          child: Text(
-                              (_avoidBorder) ? 'Bordeless' : 'Avoid Borders'),
+                          icon: Icon(
+                              (_isPaused) ? Icons.play_arrow : Icons.pause),
+                        ),
+                        IconButton(
+                          onPressed: widget.refresh,
+                          icon: const Icon(Icons.refresh),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              for (var i = 0; i < 10; i++) {
+                                flock.add(Boid());
+                              }
+                            });
+                          },
+                          icon: const Icon(Icons.add),
+                        ),
+                        IconButton(
+                          onPressed: (flock.isEmpty)
+                              ? null
+                              : () {
+                                  setState(() {
+                                    for (var i = 0; i < 10; i++) {
+                                      flock.removeAt(0);
+                                    }
+                                  });
+                                },
+                          icon: const Icon(Icons.remove),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                                minimumSize: const Size(140, 40),
+                                side: const BorderSide(
+                                  color: Colors.white,
+                                )),
+                            onPressed: () {
+                              setState(() {
+                                _avoidBorder = !_avoidBorder;
+                              });
+                            },
+                            child: Text((_avoidBorder)
+                                ? 'Borderless'
+                                : 'Avoid Borders'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            FittedBox(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5.0,
+                                ),
+                                child: Text(
+                                  'Cohesion: $_cohesionSlider',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall!
+                                      .copyWith(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            FittedBox(
+                              fit: BoxFit.fill,
+                              child: Slider(
+                                value: _cohesionSlider,
+                                min: 0,
+                                max: 2,
+                                divisions: 10,
+                                onChanged: ((double value) {
+                                  setState(() {
+                                    _cohesionSlider = value;
+                                  });
+                                }),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            FittedBox(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5.0,
+                                ),
+                                child: Text(
+                                  'Alignment: $_alignSlider',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall!
+                                      .copyWith(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            FittedBox(
+                              child: Slider(
+                                value: _alignSlider,
+                                min: 0,
+                                max: 2,
+                                divisions: 10,
+                                onChanged: ((double value) {
+                                  setState(() {
+                                    _alignSlider = value;
+                                  });
+                                }),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            FittedBox(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5.0,
+                                ),
+                                child: Text(
+                                  'Separation: $_separationSlider',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall!
+                                      .copyWith(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            FittedBox(
+                              child: Slider(
+                                value: _separationSlider,
+                                min: 0,
+                                max: 2,
+                                divisions: 10,
+                                onChanged: ((double value) {
+                                  setState(() {
+                                    _separationSlider = value;
+                                  });
+                                }),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 55, height: 55),
                     ],
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          FittedBox(
-                            child: Text(
-                              'Cohesion: $_cohesionSlider',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall!
-                                  .copyWith(color: Colors.white),
-                            ),
-                          ),
-                          FittedBox(
-                            child: Slider(
-                              value: _cohesionSlider,
-                              min: 0,
-                              max: 2,
-                              divisions: 10,
-                              onChanged: ((double value) {
-                                setState(() {
-                                  _cohesionSlider = value;
-                                });
-                              }),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          FittedBox(
-                            child: Text(
-                              'Alignment: $_alignSlider',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall!
-                                  .copyWith(color: Colors.white),
-                            ),
-                          ),
-                          FittedBox(
-                            child: Slider(
-                              value: _alignSlider,
-                              min: 0,
-                              max: 2,
-                              divisions: 10,
-                              onChanged: ((double value) {
-                                setState(() {
-                                  _alignSlider = value;
-                                });
-                              }),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          FittedBox(
-                            child: Text(
-                              'Separation: $_separationSlider',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall!
-                                  .copyWith(color: Colors.white),
-                            ),
-                          ),
-                          FittedBox(
-                            child: Slider(
-                              value: _separationSlider,
-                              min: 0,
-                              max: 2,
-                              divisions: 10,
-                              onChanged: ((double value) {
-                                setState(() {
-                                  _separationSlider = value;
-                                });
-                              }),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
         IgnorePointer(
           child: Center(
             child: FittedBox(
