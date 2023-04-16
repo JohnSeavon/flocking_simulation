@@ -8,8 +8,20 @@ class Boid {
   Boid() {
     width = size.width / ratio;
     height = size.height / ratio;
-    final x = Utils.range(0 + 80, width - 80);
-    final y = Utils.range(0 + 80, height - 80);
+    final x = Utils.range(0, width);
+    final y = Utils.range(0, height);
+    position = Vector2(x, y);
+    final dx = Utils.range(-maxSpeed, maxSpeed);
+    final dy = Utils.range(-maxSpeed, maxSpeed);
+    velocity = Vector2(dx, dy);
+    velocity = setMag(velocity, maxSpeed);
+    acceleration = Vector2.zero();
+    color = [Utils.color(), Utils.color()];
+  }
+
+  Boid.onTap(double x, double y) {
+    width = size.width / ratio;
+    height = size.height / ratio;
     position = Vector2(x, y);
     final dx = Utils.range(-maxSpeed, maxSpeed);
     final dy = Utils.range(-maxSpeed, maxSpeed);
