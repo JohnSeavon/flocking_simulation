@@ -153,6 +153,22 @@ class BoidSimulation {
   }
 
   avoidBorders() {
+    // Alternative algorithm to avoid the borders
+    // that applies the force inversely proportional
+    // to the distance from the border
+    // const border = 25.0;
+    // var force = (Utils.range(3, 5));
+    // if (boid.position.x > width - border) {
+    //   boid.velocity.x -= 0.3 + ((force) * (1 / (width - boid.position.x)));
+    // } else if (boid.position.x < 0 + border) {
+    //   boid.velocity.x += 0.3 + ((force) * (1 / boid.position.x));
+    // }
+    // if (boid.position.y > height - border) {
+    //   boid.velocity.y -= 0.3 + ((force) * (1 / (height - boid.position.y)));
+    // } else if (boid.position.y < 0 + border) {
+    //   boid.velocity.y += 0.3 + ((force) * (1 / boid.position.y));
+    // }
+
     const border = 50.0;
     var force = (Utils.range(0, 1.5));
     if (boid.position.x > width - border) {
