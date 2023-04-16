@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flocking_simulation/boid.dart';
+import 'package:flocking_simulation/boid_simulation.dart';
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math.dart' as vector;
 
@@ -12,7 +12,7 @@ class FlockPaint extends CustomPaint {
 }
 
 class FlockPainter extends CustomPainter {
-  List<Boid> flock;
+  List<BoidSimulation> flock;
   FlockPainter(this.flock);
   static const double boidSize = 8;
   static const halfSize = boidSize / 2;
@@ -23,9 +23,9 @@ class FlockPainter extends CustomPainter {
       final randompaint = Paint()
         ..color = Color.fromRGBO(boid.color[0], boid.color[1], 255, 1);
 
-      if (!boid.position.isNaN) {
+      if (!boid.boid.position.isNaN) {
         canvas.save();
-        canvas.translate(boid.position.x, boid.position.y);
+        canvas.translate(boid.boid.position.x, boid.boid.position.y);
 
         final path = Path()
           ..moveTo(halfSize + 2, 0)
@@ -33,8 +33,9 @@ class FlockPainter extends CustomPainter {
           ..lineTo(-halfSize - 1, -halfSize + 2)
           ..close();
 
-        if (boid.velocity != vector.Vector2.zero() && !boid.velocity.isNaN) {
-          final boidAngle = atan2(boid.velocity.y, boid.velocity.x);
+        if (boid.boid.velocity != vector.Vector2.zero() &&
+            !boid.boid.velocity.isNaN) {
+          final boidAngle = atan2(boid.boid.velocity.y, boid.boid.velocity.x);
           canvas.rotate(boidAngle);
         }
 

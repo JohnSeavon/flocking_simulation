@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flocking_simulation/boid.dart';
+import 'package:flocking_simulation/boid_simulation.dart';
 import 'package:flocking_simulation/flock_painter.dart';
 import 'package:flutter/material.dart';
 
@@ -18,8 +18,10 @@ class _FlockPainterViewState extends State<FlockPainterView> {
   double _separationSlider = 1;
   bool _isPaused = false;
   bool _avoidBorder = true;
+  final int _updatesPerSecond = 30;
 
-  final flock = List<Boid>.generate(50, (index) => Boid());
+  final flock =
+      List<BoidSimulation>.generate(50, (index) => BoidSimulation.newBoid());
   late Timer timer;
 
   @override
@@ -28,7 +30,7 @@ class _FlockPainterViewState extends State<FlockPainterView> {
     if (flock.isEmpty) {
       timer.cancel();
     } else {
-      const duration = Duration(milliseconds: 33);
+      Duration duration = Duration(milliseconds: 1000 ~/ _updatesPerSecond);
       timer = Timer.periodic(duration, (timer) {
         if (!_isPaused) {
           setState(() {
@@ -53,7 +55,8 @@ class _FlockPainterViewState extends State<FlockPainterView> {
             onTapDown: (details) {
               final tapPosition = details.globalPosition;
               setState(() {
-                flock.add(Boid.onTap(tapPosition.dx, tapPosition.dy));
+                flock.add(BoidSimulation.newBoidOnTap(
+                    tapPosition.dx, tapPosition.dy));
               });
             },
             child: Center(
@@ -109,7 +112,7 @@ class _FlockPainterViewState extends State<FlockPainterView> {
                             onPressed: () {
                               setState(() {
                                 for (var i = 0; i < 10; i++) {
-                                  flock.add(Boid());
+                                  flock.add(BoidSimulation.newBoid());
                                 }
                               });
                             },
@@ -120,8 +123,12 @@ class _FlockPainterViewState extends State<FlockPainterView> {
                                 ? null
                                 : () {
                                     setState(() {
-                                      for (var i = 0; i < 10; i++) {
+                                      if (flock.length < 10) {
                                         flock.removeAt(0);
+                                      } else {
+                                        for (var i = 0; i < 10; i++) {
+                                          flock.removeAt(0);
+                                        }
                                       }
                                     });
                                   },
@@ -176,7 +183,7 @@ class _FlockPainterViewState extends State<FlockPainterView> {
                                   value: _cohesionSlider,
                                   min: 0,
                                   max: 2,
-                                  divisions: 10,
+                                  divisions: 20,
                                   onChanged: ((double value) {
                                     setState(() {
                                       _cohesionSlider = value;
@@ -210,7 +217,7 @@ class _FlockPainterViewState extends State<FlockPainterView> {
                                   value: _alignSlider,
                                   min: 0,
                                   max: 2,
-                                  divisions: 10,
+                                  divisions: 20,
                                   onChanged: ((double value) {
                                     setState(() {
                                       _alignSlider = value;
@@ -244,7 +251,7 @@ class _FlockPainterViewState extends State<FlockPainterView> {
                                   value: _separationSlider,
                                   min: 0,
                                   max: 2,
-                                  divisions: 10,
+                                  divisions: 20,
                                   onChanged: ((double value) {
                                     setState(() {
                                       _separationSlider = value;

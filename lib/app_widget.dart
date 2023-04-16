@@ -22,7 +22,7 @@ class _AppWidgetState extends State<AppWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       floatingActionButton: FloatingActionButton.small(
         tooltip: (_showMenu) ? 'Close settings' : 'Show settings',
         onPressed: () {

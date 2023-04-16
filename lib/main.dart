@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
         iconButtonTheme: IconButtonThemeData(
           style: IconButton.styleFrom(
             foregroundColor: Colors.white,
+            disabledForegroundColor: Colors.white24,
             highlightColor: Colors.blue[900],
           ),
         ),
